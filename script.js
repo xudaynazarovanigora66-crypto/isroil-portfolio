@@ -8,7 +8,19 @@ const translations = {
     aboutText:"Men responsiv, tezkor va interaktiv web-saytlar yarataman. Har bir detallga ishonchli, har bir harakat maqsadga ega bo‘lishi uchun e’tibor beraman.",
     aboutLink:"Men bilan ishlang", statYears:"Yillik tajriba", statProjects:"Yakunlangan loyiha", statPassion:"Ijodiy yondashuv",
     projectsTitle:"Tanlangan ishlar", projectsCopy:"Bu joyga o‘zingizning loyihalaringizni qo‘shing.",
-    contactEyebrow:"Loyihangiz bormi?", contactTitle:"Keling, biror narsa ajoyib yarataylik.", rights:"Barcha huquqlar himoyalangan."
+    contactEyebrow:"Loyihangiz bormi?", contactTitle:"Keling, biror narsa ajoyib yarataylik.",
+    contactFormTitle:"Xabar yuborish", nameLabel:"Ismingiz", namePlaceholder:"Ismingizni kiriting",
+    phoneLabel:"Telefon raqamingiz", phonePlaceholder:"+998 90 123 45 67",
+    messageLabel:"Xabaringiz", messagePlaceholder:"Loyihangiz haqida yozing",
+    sendMessage:"Xabarni yuborish", formSending:"Xabar yuborilmoqda...",
+    formSuccess:"Xabaringiz yuborildi. Tez orada siz bilan bog‘lanaman.",
+    formApiMissing:"Server API topilmadi (404). api/contact.js faylini Vercel’ga deploy qiling.",
+    formNotConfigured:"Vercel’da TELEGRAM_BOT_TOKEN va TELEGRAM_CHAT_ID sozlamalari kiritilmagan.",
+    formTelegramFailure:"Telegram xabarni qabul qilmadi. Bot tokeni, chat ID va botga /start yuborilganini tekshiring.",
+    formInvalid:"Ism, telefon yoki xabar maydonlarini tekshirib qayta yuboring.",
+    formNetworkError:"Serverga ulanib bo‘lmadi. Internetni tekshirib qayta urinib ko‘ring.",
+    formError:"Xabar yuborilmadi. Iltimos, qaytadan urinib ko‘ring.",
+    rights:"Barcha huquqlar himoyalangan."
   },
   en: {
     navHome:"Home", navAbout:"About me", navProjects:"Projects", navContact:"Contact",
@@ -19,7 +31,19 @@ const translations = {
     aboutText:"I create responsive, fast and interactive websites. I pay attention so every detail and every movement has a purpose.",
     aboutLink:"Work with me", statYears:"Years of experience", statProjects:"Completed projects", statPassion:"Creative approach",
     projectsTitle:"Selected work", projectsCopy:"You can add your own projects here.",
-    contactEyebrow:"Have a project?", contactTitle:"Let's create something amazing.", rights:"All rights reserved."
+    contactEyebrow:"Have a project?", contactTitle:"Let's create something amazing.",
+    contactFormTitle:"Send a message", nameLabel:"Your name", namePlaceholder:"Enter your name",
+    phoneLabel:"Your phone number", phonePlaceholder:"+1 555 123 4567",
+    messageLabel:"Your message", messagePlaceholder:"Tell me about your project",
+    sendMessage:"Send message", formSending:"Sending your message...",
+    formSuccess:"Your message has been sent. I will get back to you soon.",
+    formApiMissing:"Contact API not found (404). Deploy api/contact.js to Vercel.",
+    formNotConfigured:"TELEGRAM_BOT_TOKEN and TELEGRAM_CHAT_ID are not configured in Vercel.",
+    formTelegramFailure:"Telegram rejected the message. Check the bot token, chat ID, and that you sent /start to the bot.",
+    formInvalid:"Please check the name, phone number, and message fields.",
+    formNetworkError:"Could not connect to the server. Check your connection and try again.",
+    formError:"Your message could not be sent. Please try again.",
+    rights:"All rights reserved."
   },
   ru: {
     navHome:"Главная", navAbout:"Обо мне", navProjects:"Проекты", navContact:"Контакты",
@@ -30,7 +54,19 @@ const translations = {
     aboutText:"Я создаю адаптивные, быстрые и интерактивные сайты. Каждая деталь и каждое движение имеют свой смысл.",
     aboutLink:"Начать проект", statYears:"Лет опыта", statProjects:"Завершенных проектов", statPassion:"Творческий подход",
     projectsTitle:"Избранные работы", projectsCopy:"Здесь вы можете добавить свои проекты.",
-    contactEyebrow:"Есть проект?", contactTitle:"Давайте создадим что-то потрясающее.", rights:"Все права защищены."
+    contactEyebrow:"Есть проект?", contactTitle:"Давайте создадим что-то потрясающее.",
+    contactFormTitle:"Отправить сообщение", nameLabel:"Ваше имя", namePlaceholder:"Введите имя",
+    phoneLabel:"Ваш номер телефона", phonePlaceholder:"+7 900 123-45-67",
+    messageLabel:"Ваше сообщение", messagePlaceholder:"Расскажите о вашем проекте",
+    sendMessage:"Отправить сообщение", formSending:"Сообщение отправляется...",
+    formSuccess:"Сообщение отправлено. Я скоро с вами свяжусь.",
+    formApiMissing:"API формы не найдено (404). Разверните api/contact.js на Vercel.",
+    formNotConfigured:"В Vercel не настроены TELEGRAM_BOT_TOKEN и TELEGRAM_CHAT_ID.",
+    formTelegramFailure:"Telegram не принял сообщение. Проверьте токен, chat ID и отправьте боту /start.",
+    formInvalid:"Проверьте поля имени, телефона и сообщения.",
+    formNetworkError:"Не удалось подключиться к серверу. Проверьте интернет и повторите попытку.",
+    formError:"Не удалось отправить сообщение. Попробуйте ещё раз.",
+    rights:"Все права защищены."
   }
 };
 
@@ -40,6 +76,10 @@ function setLanguage(lang) {
   document.querySelectorAll("[data-i18n]").forEach(el => {
     const key = el.dataset.i18n;
     if (translations[lang][key]) el.textContent = translations[lang][key];
+  });
+  document.querySelectorAll("[data-i18n-placeholder]").forEach(el => {
+    const key = el.dataset.i18nPlaceholder;
+    if (translations[lang][key]) el.placeholder = translations[lang][key];
   });
   localStorage.setItem("isroil-language", lang);
 }
@@ -144,3 +184,55 @@ document.querySelectorAll(".stats strong").forEach((counter, index) => {
 
 document.querySelector("#year").textContent = new Date().getFullYear();
 updateHero();
+
+const contactForm = document.querySelector("#contact-form");
+const contactFormStatus = document.querySelector("#contact-form-status");
+contactForm.addEventListener("submit", async event => {
+  event.preventDefault();
+  const formData = new FormData(contactForm);
+  const button = contactForm.querySelector('button[type="submit"]');
+  const lang = document.documentElement.lang;
+
+  if (formData.get("website")) return;
+
+  button.disabled = true;
+  contactFormStatus.textContent = translations[lang].formSending;
+
+  try {
+    const response = await fetch("/api/contact", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        name: formData.get("name"),
+        phone: formData.get("phone"),
+        message: formData.get("message"),
+        website: formData.get("website")
+      })
+    });
+
+    const isJson = response.headers.get("content-type")?.includes("application/json");
+    const result = isJson ? await response.json() : null;
+    if (!response.ok) {
+      const errorKey = response.status === 404 || !isJson
+        ? "formApiMissing"
+        : response.status === 503
+          ? "formNotConfigured"
+          : response.status === 502
+            ? "formTelegramFailure"
+            : response.status === 400
+              ? "formInvalid"
+              : "formError";
+      contactFormStatus.textContent = translations[lang][errorKey];
+      console.error("Contact form API returned an error:", response.status, result?.code || "non-json response");
+      return;
+    }
+
+    contactForm.reset();
+    contactFormStatus.textContent = translations[lang].formSuccess;
+  } catch (error) {
+    console.error("Could not send contact form:", error);
+    contactFormStatus.textContent = translations[lang].formNetworkError;
+  } finally {
+    button.disabled = false;
+  }
+});
